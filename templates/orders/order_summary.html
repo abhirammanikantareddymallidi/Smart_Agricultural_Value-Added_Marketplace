@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="row">
+    <div class="col-lg-8">
+        <h3 class="mb-4 text-success">Review Your Order</h3>
+        
+        <div class="card shadow-sm mb-4 border-success">
+            <div class="card-header bg-transparent border-success d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">Shipping Address</h5>
+                <a href="{% url 'ui_checkout' %}" class="text-success text-decoration-none">Change</a>
+            </div>
+            <div class="card-body">
+                <strong>{{ address.full_name }}</strong><br>
+                {{ address.address_line }}, {{ address.city }}<br>
+                {{ address.state }}, {{ address.pincode }}<br>
+                Phone: {{ address.phone }}
+            </div>
+        </div>
+
+        <div class="card shadow-sm mb-4">
+            <div class="card-header bg-light">
+                <h5 class="mb-0">Items in Your Order</h5>
+            </div>
+            <div class="card-body">
+                {% for item in cart.items.all %}
+                <div class="row align-items-center mb-3">
+                    <div class="col-8">
+                        <h6 class="mb-0">{{ item.product.name }}</h6>
+                        <small class="text-muted">Quantity: {{ item.quantity }} x ${{ item.product.price_per_half_kg }}</small>
+                    </div>
+                    <div class="col-4 text-end">
+                        <strong>${{ item.total_price }}</strong>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Final confirmation panel -->
+    <div class="col-lg-4">
+        <div class="card shadow border-warning">
+            <div class="card-body">
+                <form method="post" action="{% url 'ui_place_order' %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="address_id" value="{{ address.id }}">
+                    
+                    <button type="submit" class="btn btn-warning w-100 py-3 fw-bold mb-4" style="font-size: 1.1rem;">Place your order</button>
+                    
+                    <h5 class="card-title border-bottom pb-2">Order Summary</h5>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>Items:</span>
+                        <span>${{ cart.total_price }}</span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>Delivery:</span>
+                        <span class="text-success">Free</span>
+                    </div>
+                    <hr>
+                    <h3 class="d-flex justify-content-between text-danger mb-0">
+                        <span>Order Total:</span>
+                        <span>${{ cart.total_price }}</span>
+                    </h3>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

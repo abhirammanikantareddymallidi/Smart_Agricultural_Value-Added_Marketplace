@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{% url 'ui_product_list' %}" class="text-success">Products</a></li>
+        <li class="breadcrumb-item active" aria-current="page">{{ product.name }}</li>
+    </ol>
+</nav>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h2 class="card-title">{{ product.name }}</h2>
+                <h5 class="text-muted mb-4">{{ product.category }}</h5>
+                
+                <p class="lead">{{ product.description }}</p>
+                
+                <h3 class="text-success">${{ product.price }}</h3>
+                <p>Available Stock: {{ product.stock_quantity }} (in 0.5kg units)</p>
+                
+                <hr>
+                <h5>Sold by: <span class="badge bg-secondary">{{ product.farmer.username }}</span></h5>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h4>Purchase options</h4>
+                {% if request.user.is_authenticated and request.user.role == 'BUYER' %}
+                    <form action="{% url 'ui_add_to_cart' %}" method="post">
+                        {% csrf_token %}
+                        <input type="hidden" name="product_id" value="{{ product.id }}">
+                        <div class="mb-3">
+                            <label for="quantity" class="form-label">Quantity</label>
+                            <input type="number" class="form-control" id="quantity" name="quantity" min="1" max="{{ product.stock_quantity }}" value="1" required>
+                        </div>
+                        <button type="submit" class="btn btn-warning w-100 fw-bold" {% if product.stock_quantity == 0 %}disabled{% endif %}>
+                            {% if product.stock_quantity == 0 %}Out of Stock{% else %}Add to Cart{% endif %}
+                        </button>
+                    </form>
+                {% elif request.user.is_authenticated %}
+                    <div class="alert alert-warning">Only buyers can place orders.</div>
+                {% else %}
+                    <div class="alert alert-info">Please <a href="{% url 'ui_login' %}">login</a> to add to cart.</div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

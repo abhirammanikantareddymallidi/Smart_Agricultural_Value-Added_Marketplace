@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col">
+        <h2>Your Orders</h2>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col">
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+
+        {% if orders %}
+        <div class="table-responsive shadow-sm">
+            <table class="table table-hover align-middle">
+                <thead class="table-success">
+                    <tr>
+                        <th scope="col">Order ID</th>
+                        <th scope="col">Date</th>
+                        <th scope="col">Buyer</th>
+                        <th scope="col">Status</th>
+                        <th scope="col">Total Price</th>
+                        <th scope="col">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for order in orders %}
+                    <tr>
+                        <th scope="row">#{{ order.id }}</th>
+                        <td>{{ order.created_at|date:"M d, Y" }}</td>
+                        <td>{{ order.buyer.username }}</td>
+                        <td>
+                            {% if order.status == 'PENDING' %}
+                                <span class="badge bg-warning text-dark">{{ order.get_status_display }}</span>
+                            {% elif order.status == 'DELIVERED' %}
+                                <span class="badge bg-success">{{ order.get_status_display }}</span>
+                            {% else %}
+                                <span class="badge bg-primary">{{ order.get_status_display }}</span>
+                            {% endif %}
+                        </td>
+                        <td>${{ order.total_price }}</td>
+                        <td>
+                            <a href="{% url 'ui_order_detail' order.pk %}" class="btn btn-sm btn-outline-success">View Details</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="alert alert-info">
+            You don't have any orders yet. <a href="{% url 'ui_product_list' %}" class="alert-link">Browse products</a>.
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

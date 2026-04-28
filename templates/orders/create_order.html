@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card shadow-sm mt-4">
+            <div class="card-header bg-success text-white">
+                <h4>Checkout: Place Your Order</h4>
+            </div>
+            <div class="card-body">
+                {% if messages %}
+                    {% for message in messages %}
+                        <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+                    {% endfor %}
+                {% endif %}
+                
+                <h5>{{ product.name }}</h5>
+                <p class="text-muted">Farmer: {{ product.farmer.username }}</p>
+                <p><strong>Price per 0.5kg:</strong> $<span id="unitPrice">{{ product.price_per_half_kg }}</span></p>
+                <p><strong>Available Stock:</strong> {{ product.stock_quantity }} (in 0.5kg units)</p>
+                
+                <hr>
+                
+                <form method="post" action="{% url 'ui_order_create' %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="product_id" value="{{ product.id }}">
+                    
+                    <div class="mb-3">
+                        <label for="quantity" class="form-label">Quantity</label>
+                        <input type="number" class="form-control" id="quantity" name="quantity" min="1" max="{{ product.stock_quantity }}" value="1" required>
+                    </div>
+                    
+                    <div class="alert alert-info">
+                        <strong>Total Price:</strong> $<span id="totalPrice">{{ product.price_per_half_kg }}</span>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-success w-100" {% if product.stock_quantity == 0 %}disabled{% endif %}>
+                        {% if product.stock_quantity == 0 %}Sold Out{% else %}Confirm Purchase{% endif %}
+                    </button>
+                    <a href="{% url 'ui_product_list' %}" class="btn btn-outline-secondary w-100 mt-2">Cancel</a>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const qtyInput = document.getElementById('quantity');
+        const unitPrice = parseFloat(document.getElementById('unitPrice').innerText);
+        const totalPriceEl = document.getElementById('totalPrice');
+        
+        qtyInput.addEventListener('input', function() {
+            let qty = parseInt(qtyInput.value) || 0;
+            let maxQty = parseInt(qtyInput.getAttribute('max')) || 0;
+            if (qty > maxQty) qtyInput.value = maxQty;
+            if (qty < 1) qtyInput.value = 1;
+            totalPriceEl.innerText = (qtyInput.value * unitPrice).toFixed(2);
+        });
+    });
+</script>
+{% endblock %}

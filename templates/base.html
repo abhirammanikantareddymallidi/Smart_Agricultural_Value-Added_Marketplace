@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Agri Marketplace</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body { padding-top: 60px; }
+    </style>
+</head>
+<body>
+
+<nav class="navbar navbar-expand-md navbar-dark bg-success fixed-top">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="/">SmartAgri</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarsExampleDefault" aria-controls="navbarsExampleDefault" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarsExampleDefault">
+            <ul class="navbar-nav me-auto mb-2 mb-md-0">
+                <li class="nav-item">
+                    <a class="nav-link" href="/">Home</a>
+                </li>
+                {% if request.user.is_authenticated %}
+                    {% if request.user.role == 'FARMER' %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="/ui/products/my-products/">My Products</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/ui/products/add/">Add Product</a>
+                    </li>
+                    {% endif %}
+                    {% if request.user.role == 'BUYER' %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'ui_product_list' %}">Shop Products</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'ui_cart' %}">Cart</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'ui_order_list' %}">My Orders</a>
+                    </li>
+                    {% endif %}
+                {% else %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="/ui/products/">Products</a>
+                    </li>
+                {% endif %}
+            </ul>
+            <ul class="navbar-nav ms-auto">
+                {% if request.user.is_authenticated %}
+                <li class="nav-item">
+                    <span class="nav-link">Welcome, {{ request.user.username }} ({{ request.user.role }})</span>
+                </li>
+                <li class="nav-item">
+                    <form action="/ui/users/logout/" method="post" class="d-inline">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-outline-light btn-sm mt-1">Logout</button>
+                    </form>
+                </li>
+                {% else %}
+                <li class="nav-item">
+                    <a class="nav-link" href="/ui/users/login/">Login</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/ui/users/register/">Register</a>
+                </li>
+                {% endif %}
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<main class="container mt-4">
+    {% block content %}
+    {% endblock %}
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card shadow-sm">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">Add a New Address</h5>
+            </div>
+            <div class="card-body">
+                <form method="post" action="{% url 'ui_add_address' %}">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label for="full_name" class="form-label">Full Name</label>
+                        <input type="text" class="form-control" id="full_name" name="full_name" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="phone" class="form-label">Mobile Number</label>
+                        <input type="text" class="form-control" id="phone" name="phone" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="address_line" class="form-label">Flat, House no., Building, Company, Apartment</label>
+                        <input type="text" class="form-control" id="address_line" name="address_line" required>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="city" class="form-label">City</label>
+                            <input type="text" class="form-control" id="city" name="city" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="state" class="form-label">State</label>
+                            <input type="text" class="form-control" id="state" name="state" required>
+                        </div>
+                    </div>
+                    <div class="mb-4">
+                        <label for="pincode" class="form-label">Pincode</label>
+                        <input type="text" class="form-control" id="pincode" name="pincode" required>
+                    </div>
+                    <button type="submit" class="btn btn-warning w-100 fw-bold">Add Address</button>
+                    <a href="{% url 'ui_checkout' %}" class="btn btn-link text-decoration-none w-100 d-block text-center mt-2">Cancel</a>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
